@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+
+# Documentation
+# https://docs.python.org/3.5/howto/curses.html
+# http://codereview.stackexchange.com/questions/26534/is-there-a-better-way-to-count-seconds-in-python
+# http://stackoverflow.com/questions/25189554/countdown-clock-0105
+
+import time, sys
+import re
+import os
+import subprocess
+
+###############
+# Global vars #
+###############
+SECONDS_IN_HOUR = 3600
+SECONDS_IN_MINUTE = 60
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+# AUDIO1 was downloaded from http://soundbible.com/1795-Electrical-Sweep.html
+# and it has a Public Domain license
+# AUDIO2 was downloaded from http://soundbible.com/1823-Winning-Triumphal-Fanfare.html
+# and it has a Attribution 3.0 license
+# AUDIO3 was downloaded from http://soundbible.com/1846-Warbling-Vireo.html
+# and it has a Attribution 3.0 license
+AUDIO1 = SCRIPT_DIR + "/.mp3/1.mp3"
+AUDIO2 = SCRIPT_DIR + "/.mp3/2.mp3"
+AUDIO3 = SCRIPT_DIR + "/.mp3/3.mp3"
+
+str_help = """Pomodoro CLI timer
+
+TL;DR
+-----
+Examples:
+pomodoro 2h         - To have a 2 hours countdown timer.
+pomodoro "2h 2m 2s" - To have a 2 hours, 2 minutes, 2 seconds countdown timer.
+pomodoro 1h 10m 2   - To study for 1 hour with a 10 min break. Repeat process 2 times.
+
+TL;WRA (Too Long; Will Read Anyway)
+-----------------------------------
+This script has two working modes:
+I. Simply a countdown timer
+II. Pomodoro work technique
+
+I. To use this mode you give the script one argument. You must specify the time by
+appending 'h' to hours, 'm' to minutes, and/or 's' to seconds. You append next to the digit.
+You may specify a countdown of 1 hour, 20 minutes, 10 seconds by using doble quotes.
+The doble quotes are needed because the script expects only one argument for the
+countdown timer mode.
+
+$ pomodoro "1h 20m 10s"
+
+II. To use this mode you give the script three arguments. The first argument
+is how long you want to study for, the second argument is how long you want your
+break to be, and the third argument is how many times you want to repeat this process.
+
+For example, if we wanted to study for 2 hours, and then rest for 10 minutes.
+And repeat this process two times we would just need to run:
+
+$ pomodoro 2h 10m 2
+"""
+
+
+#############
+# Functions #
+#############
+def play_audio(option):
+    if sys.platform == "linux" or sys.platform == "freebsd":
+        # Print a visual bell
+        sys.stdout.write('\a')
+        try:
+            if option == 1:
+                subprocess.call(["mpv", "--really-quiet", AUDIO3])
+            elif option == 2:
+                subprocess.call(["mpv", "--really-quiet", AUDIO1])
+            elif option == 3:
+                subprocess.call(["mpv", "--really-quiet", AUDIO2])
+        except FileNotFoundError:
+            print("This script depends on mpv. Make sure it is installed.")
+
+    elif sys.platform == "darwin":
+        if option == 1:
+            subprocess.call(["afplay", AUDIO3])
+        elif option == 2:
+            subprocess.call(["afplay", AUDIO1])
+        elif option == 3:
+            subprocess.call(["afplay", AUDIO2])
+    else:
+        print("Sorry. This platform is not supported.")
+
+
+def count_down(seconds):
+    while seconds:
+        # On the first divmod the quotient will be the minutes and the remainder will be the seconds
+        # On the second divmod the quotient will be the hours and the remainder will be the minutes
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
+        time_format = '{:02d}:{:02d}:{:02d}'.format(h, m, s)
+        print(time_format, end='\r', flush=True)
+        time.sleep(1)
+        seconds = seconds - 1
+
+def convert_to_seconds(given_time):
+    seconds = 0
+    m1 = re.search('0*(\d+)h', given_time)
+    m2 = re.search('0*(\d+)m', given_time)
+    m3 = re.search('0*(\d+)s', given_time)
+    # Hours
+    if m1:
+        seconds = seconds + (int(m1.group(1)) * SECONDS_IN_HOUR)
+    # Minutes
+    if m2:
+        seconds = seconds + (int(m2.group(1)) * SECONDS_IN_MINUTE)
+    # Seconds
+    if m3:
+        seconds = seconds + int(m3.group(1))
+
+    # If the seconds is still zero that means that no hours, minutes, or
+    # seconds were found on the string.
+    if seconds == 0:
+        sys.exit("There was an error with the string you gave me. Aborting.")
+
+    return seconds
+
+########
+# Main #
+########
+
+# Pomodoro <timer_time>
+if len(sys.argv) == 2:
+    count_down(convert_to_seconds(sys.argv[1]))
+    play_audio(1)
+
+# Pomodoro <study_time> <rest_time> <repetitions>
+elif len(sys.argv) == 4:
+    # Print a warning and stop if <repetition> is not a digit
+    if not sys.argv[3].isdigit():
+        sys.exit("Warning: The last argument must be a digit")
+
+    # Iterate <repetition> amount of times
+    for i in range(int(sys.argv[3])):
+        count_down(convert_to_seconds(sys.argv[1]))
+        play_audio(2)
+        count_down(convert_to_seconds(sys.argv[2]))
+        play_audio(3)
+        print("Loop " + str(i + 1) + " completed")
+
+# Print the help, since an invalid number of arguments were given
+else:
+    print(str_help)
