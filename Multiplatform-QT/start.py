@@ -5,7 +5,7 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
-from countdown_ui import Ui_main_window
+from pomodoro_ui import Ui_main_window
 
 # UI class to call the auto generated qt-designer file
 class StartQT4(QtGui.QWidget):
