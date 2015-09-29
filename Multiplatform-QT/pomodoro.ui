@@ -26,13 +26,19 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
+       <string>Pomodoro</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
        <string>Countdown</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
          <item>
@@ -45,7 +51,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="spinBox_hours"/>
            </item>
            <item>
             <widget class="QLabel" name="label_minutes">
@@ -55,7 +61,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox_2"/>
+            <widget class="QSpinBox" name="spinBox_minutes"/>
            </item>
            <item>
             <widget class="QLabel" name="label_seconds">
@@ -65,7 +71,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox_3"/>
+            <widget class="QSpinBox" name="spinBox_seconds"/>
            </item>
           </layout>
          </item>
@@ -100,13 +106,6 @@
         </layout>
        </item>
       </layout>
-      <zorder>label_minutes</zorder>
-      <zorder></zorder>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Pomodoro</string>
-      </attribute>
      </widget>
     </widget>
    </item>

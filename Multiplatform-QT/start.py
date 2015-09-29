@@ -7,8 +7,28 @@ import sys
 from PyQt4 import QtCore, QtGui
 from pomodoro_ui import Ui_main_window
 
+#################
+# Pomodoro code #
+#################
+class Pomodoro():
+    def print_test1():
+        print("Button 1 pressed")
+        hours = myapp.ui.spinBox_hours.value()
+        minutes = myapp.ui.spinBox_minutes.value()
+        seconds = myapp.ui.spinBox_seconds.value()
+        print("Hours is: " + str(hours))
+        print("Minutes is: " + str(minutes))
+        print("Seconds is: " + str(seconds))
+
+    def print_test2():
+        print("Button 2 pressed")
+
+    def print_test3():
+        print("Button 3 pressed")
+
 # UI class to call the auto generated qt-designer file
 class StartQT4(QtGui.QWidget):
+    # Constructor
     def __init__(self):
         QtGui.QWidget.__init__(self)
         self.ui = Ui_main_window()
@@ -16,21 +36,10 @@ class StartQT4(QtGui.QWidget):
         ################################
         # Connect signals to our slots #
         ################################
-        QtCore.QObject.connect(self.ui.pushButton_1, QtCore.SIGNAL("clicked()"), self.print_test1)
-        QtCore.QObject.connect(self.ui.pushButton_2, QtCore.SIGNAL("clicked()"), self.print_test2)
-        QtCore.QObject.connect(self.ui.pushButton_3, QtCore.SIGNAL("clicked()"), self.print_test3)
+        QtCore.QObject.connect(self.ui.pushButton_1, QtCore.SIGNAL("clicked()"), Pomodoro.print_test1)
+        QtCore.QObject.connect(self.ui.pushButton_2, QtCore.SIGNAL("clicked()"), Pomodoro.print_test2)
+        QtCore.QObject.connect(self.ui.pushButton_3, QtCore.SIGNAL("clicked()"), Pomodoro.print_test3)
 
-    #############
-    # Functions #
-    #############
-    def print_test1(self):
-        print("Button 1 pressed")
-
-    def print_test2(self):
-        print("Button 2 pressed")
-
-    def print_test3(self):
-        print("Button 3 pressed")
 
 
 ########
