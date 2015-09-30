@@ -1,0 +1,170 @@
+#!/usr/bin/env python
+
+# NOTES
+# https://wiki.python.org/moin/PyQt/Tutorials
+# http://stackoverflow.com/questions/27212026/how-to-separate-the-ui-and-implementation-in-pyqt
+# http://thecodeinn.blogspot.com/2013/07/tutorial-pyqt-digital-clock.html
+# https://srinikom.github.io/pyside-docs/PySide/QtCore/QTimer.html
+
+import time, sys
+from PyQt4 import QtCore, QtGui
+from pomodoro_ui import Ui_main_window
+
+###############
+# Global vars #
+###############
+SECONDS_IN_HOUR = 3600
+SECONDS_IN_MINUTE = 60
+SECONDS = 0
+STRING = 0
+TIMER = 0
+
+#################
+# Pomodoro code #
+#################
+# Perform the countdown
+def Pomodoro_count_down():
+    global SECONDS
+    global STRING
+    # Get a new format string
+    STRING = Pomodoro_convert_from_seconds()
+    # Print the results
+    print("Format string: " + STRING)
+    myapp.ui.lcdNumber.display(STRING)
+    # Update the seconds
+    SECONDS = SECONDS - 1
+    if SECONDS < 0:
+        # Stop QTimer
+        myapp.timer(False)
+        # Update buttons: start, pause, stop
+        C_update_buttons(True, False, False)
+        # Play a notification
+        #TODO: Finish code
+
+
+# Convert from seconds to hours:minutes:seconds
+def Pomodoro_convert_from_seconds():
+    # On the first divmod the quotient will be the minutes and the remainder will be the seconds
+    # On the second divmod the quotient will be the hours and the remainder will be the minutes
+    m, s = divmod(SECONDS, 60)
+    h, m = divmod(m, 60)
+    time_format = '{:02d}:{:02d}:{:02d}'.format(h, m, s)
+    return time_format
+
+# Convert hours:minutes:seconds in just seconds
+def Pomodoro_convert_to_seconds(hours, minutes, seconds):
+    global SECONDS
+    SECONDS = 0;
+    if hours != 0:
+        SECONDS += (hours * SECONDS_IN_HOUR)
+    if minutes != 0:
+        SECONDS += (minutes * SECONDS_IN_MINUTE)
+    if seconds != 0:
+        SECONDS += seconds
+
+# Countdown Start button
+def C_start():
+    global SECONDS;
+    # Update buttons: start, pause, stop
+    C_update_buttons(False, True, True)
+    # (1) Fetch the hours, minutes, and seconds that user gave us
+    hours = myapp.ui.spinBox_hours.value()
+    minutes = myapp.ui.spinBox_minutes.value()
+    seconds = myapp.ui.spinBox_seconds.value()
+    # (2) Do nothing if the previous step results
+    # in 0 hours, minutes, and seconds
+    if hours == 0 and minutes == 0 and seconds == 0:
+        # Update buttons: start, pause, stop
+        C_update_buttons(True, False, False)
+        return None
+    # (3) Fetch the seconds
+    Pomodoro_convert_to_seconds(hours, minutes, seconds)
+    # (4) Start the countdown by using QTimer
+    Pomodoro_count_down()
+    myapp.timer(True)
+
+# Countdown Pause button
+def C_pause():
+    # Update buttons: start, pause, stop
+    C_update_buttons(False, True, True)
+    #TODO: Finish code
+
+# Countdown Stop button
+def C_stop():
+    # Update buttons: start, pause, stop
+    C_update_buttons(True, False, False)
+    # Stop QTimer
+    myapp.timer(False)
+    # Remove the previous value from SECONDS
+    global SECONDS
+    SECONDS = 0
+    myapp.ui.lcdNumber.display("00:00:00")
+
+# Countdown button state toggle
+def C_update_buttons(start, pause, stop):
+    # Start button
+    if start == True:
+        myapp.ui.pushButton_1.setEnabled(True)
+    else:
+        myapp.ui.pushButton_1.setEnabled(False)
+    # Pause button
+    if pause:
+        myapp.ui.pushButton_2.setEnabled(True)
+    else:
+        myapp.ui.pushButton_2.setEnabled(False)
+    # Stop button
+    if stop:
+        myapp.ui.pushButton_3.setEnabled(True)
+    else:
+        myapp.ui.pushButton_3.setEnabled(False)
+########################
+# END of Pomodoro code #
+########################
+
+
+
+
+# UI class to call the auto generated qt-designer file
+class StartQT4(QtGui.QWidget):
+    # Constructor
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+        self.ui = Ui_main_window()
+        self.ui.setupUi(self)
+        # We want to be able to display 8 digits in the clock
+        self.ui.lcdNumber.setDigitCount(8)
+        # Connect signals to our slots
+        QtCore.QObject.connect(self.ui.pushButton_1, QtCore.SIGNAL("clicked()"), C_start)
+        QtCore.QObject.connect(self.ui.pushButton_2, QtCore.SIGNAL("clicked()"), C_pause)
+        QtCore.QObject.connect(self.ui.pushButton_3, QtCore.SIGNAL("clicked()"), C_stop)
+
+    def timer(self, state):
+        global TIMER
+        # Create the timer
+        if state:
+            # Create a timer
+            TIMER = QtCore.QTimer(self)
+            # Connect the timer to the appropriate slot
+            TIMER.timeout.connect(Pomodoro_count_down)
+            # Wait one second between slot calls
+            TIMER.start(1000)
+        # Destroy the timer
+        if not state:
+            print("We were told to stop")
+            TIMER.stop()
+########
+# Main #
+########
+if __name__ == "__main__":
+    # Create a PyQT4 application object
+    app = QtGui.QApplication(sys.argv)
+    # Start the GUI
+    myapp = StartQT4()
+    # Make QLCDNumber show 00:00:00 instead of 0 at the beginning
+    # I am abusing QLCDNumber by displaying strings instead of just
+    # integers, but QLabel looks way too bad for this task.
+    myapp.ui.lcdNumber.display("00:00:00")
+    # Show the widget on the screen
+    myapp.show()
+    # Ensure a clean exit
+    sys.exit(app.exec_())
