@@ -22,9 +22,9 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 # and it has a Attribution 3.0 license
 # AUDIO3 was downloaded from http://soundbible.com/1846-Warbling-Vireo.html
 # and it has a Attribution 3.0 license
-AUDIO1 = SCRIPT_DIR + "/.mp3/1.mp3"
-AUDIO2 = SCRIPT_DIR + "/.mp3/2.mp3"
-AUDIO3 = SCRIPT_DIR + "/.mp3/3.mp3"
+AUDIO1 = SCRIPT_DIR + "/mp3/1.mp3"
+AUDIO2 = SCRIPT_DIR + "/mp3/2.mp3"
+AUDIO3 = SCRIPT_DIR + "/mp3/3.mp3"
 
 str_help = """Pomodoro CLI timer
 
