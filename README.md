@@ -1,10 +1,12 @@
 # Pomodoro
 
-A Pomodoro clock with different versions for:
+SDaldaskldjklsajdklas
 
-1) Command Line Interface on Linux and OSX
-2) Command Line Interface on Windows
-3) A GUI written in QT
-4) TODO: A GUI written in GTK
-5) TODO: A GUI written in ncurses
-6) TODO: A Java version written for Android
+## Versions available for
+
+* Command Line Interface on Linux and OSX
+* Command Line Interface on Windows
+* A GUI written in QT **[Work in Progress]**
+* A GUI written in GTK **[Work in Progress]**
+* A GUI written in ncurses **[Work in Progress]**
+* A Java version written for Android **[Work in Progress]**
