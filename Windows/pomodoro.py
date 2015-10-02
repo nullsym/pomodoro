@@ -90,50 +90,48 @@ def convert_to_seconds(given_time):
         seconds = seconds + int(m3.group(1))
 
     if seconds == 0:
-        sys.exit("There was an error with the string you gave me. Aborting.")
-
+        print("There was an error with the string you gave me. Aborting.")
+        time.sleep(2)
+        sys.exit("Input error. There were zero seconds.")
     return seconds
 
 ########
 # Main #
 ########
+print("+--------------------+")
+print("|     POMODORO       |")
+print("|       TIMER        |")
+print("+--------------------+")
+
 while True:
-    print("+--------------------+")
-    print("| 1) Countdown timer |")
-    print("| 2) Pomodoro timer  |")
-    print("+--------------------+")
-    print("\nNote: To exit out of the loop close the windows or press ctrl+c")
-    print("\n")
-    # Grab user input
-    user_input = raw_input("Choose a mode: ")
+    print("\n\nTLDR")
+    print("------------------------\n")
+    print("Example (1) We want to study for 2 hours, with a 10min break and repeat this process 2 times.\n")
+    print("Example (1) needed input: 2h 10m 2\n")
+    print("Example (2) We want to study for 2 hours and then stop\n")
+    print("Example (2) needed input: 2h NA 0\n")
+    print("------------------------\n")
 
-    # Countdown timer mode
-    if user_input == "1":
-        user_input = raw_input("For how long: ")
-        count_down(convert_to_seconds(user_input))
-        play_audio(1)
+    input_raw = raw_input("Input: ")
+    input_list = input_raw.split()
 
-    # Pomodoro mode
-    elif user_input == "2":
-        print("Example: Suppose we want to study for 2 hours, with a 10min break and iterate 2 times. Then we would need to input:\n")
-        print("Example input: 2h 10m 2")
-        print("------------------------\n")
-        input_raw = raw_input("For how long: ")
-        input_list = input_raw.split()
+    # Continue with the infite loop until user gives proper arguments
+    if len(input_list) != 3:
+        print("This option must receive three arguments. Try again.")
+        continue
+    # Continue with the infite loop until user gives proper arguments
+    if not input_list[2].isdigit():
+        print("The third argument must be  digit. It denotes how many loops you want")
+        continue
 
-        # Continue with the infite loop until user gives proper arguments
-        if len(input_list) != 3:
-            print("This option must receive three arguments. Try again.")
-            continue
-        # Continue with the infite loop until user gives proper arguments
-        if not input_list[2].isdigit():
-            print("The third argument must be  digit. It denotes how many loops you want")
-            continue
-
-        # Start pomodoro
-        for i in range(int(input_list[2])):
-            count_down(convert_to_seconds(input_list[0]))
-            play_audio(2)
-            count_down(convert_to_seconds(input_list[1]))
-            play_audio(3)
+    # Start pomodoro
+    for i in range(int(input_list[2]) + 1):
+        count_down(convert_to_seconds(input_list[0]))
+        play_audio(2)
+        # Do not perform the break countdown if user specifies Not Applicable
+        if input_list[1] == "NA":
             print("Loop %d completed") % i
+            continue
+        count_down(convert_to_seconds(input_list[1]))
+        play_audio(3)
+        print("Loop %d completed") % i
