@@ -18,6 +18,7 @@ from pomodoro_ui import Ui_main_window
 ###############
 SECONDS_IN_HOUR = 3600
 SECONDS_IN_MINUTE = 60
+# Non-constant globals
 SECONDS = 0
 STRING = 0
 TIMER = 0
@@ -26,9 +27,8 @@ PAUSED = False
 #################
 # Pomodoro code #
 #################
-def Pomodoro_play_notification():
+def pomodoro_play_notification():
     print("Playing notification")
-
     # audio = Phonon.AudioOutput(Phonon.MusicCategory)
     # media = Phonon.MediaObject()
     # Phonon.createPath(media, audio)
@@ -37,11 +37,11 @@ def Pomodoro_play_notification():
     # media.play()
 
 # Perform the countdown
-def Pomodoro_count_down():
+def pomodoro_count_down():
     global SECONDS
     global STRING
     # Get a new format string
-    STRING = Pomodoro_convert_from_seconds()
+    STRING = pomodoro_convert_from_seconds()
     # Print the results
     # print("Format string: " + STRING)
     myapp.ui.lcdNumber.display(STRING)
@@ -51,13 +51,13 @@ def Pomodoro_count_down():
         # Stop QTimer
         myapp.timer(False)
         # Update buttons: start, pause, stop
-        C_update_buttons(True, False, False)
+        c_update_buttons(True, False, False)
         # Play a notification
-        Pomodoro_play_notification()
+        pomodoro_play_notification()
 
 
 # Convert from seconds to hours:minutes:seconds
-def Pomodoro_convert_from_seconds():
+def pomodoro_convert_from_seconds():
     # On the first divmod the quotient will be the minutes and the remainder will be the seconds
     # On the second divmod the quotient will be the hours and the remainder will be the minutes
     m, s = divmod(SECONDS, 60)
@@ -66,7 +66,7 @@ def Pomodoro_convert_from_seconds():
     return time_format
 
 # Convert from hours:minutes:seconds to seconds
-def Pomodoro_convert_to_seconds(hours, minutes, seconds):
+def pomodoro_convert_to_seconds(hours, minutes, seconds):
     global SECONDS
     SECONDS = 0;
     if hours != 0:
@@ -77,10 +77,10 @@ def Pomodoro_convert_to_seconds(hours, minutes, seconds):
         SECONDS += seconds
 
 # Countdown Start button
-def C_start():
+def c_start():
     global SECONDS;
     # Update buttons: start, pause, stop
-    C_update_buttons(False, True, True)
+    c_update_buttons(False, True, True)
     # (1) Fetch the hours, minutes, and seconds that user gave us
     hours = myapp.ui.spinBox_hours.value()
     minutes = myapp.ui.spinBox_minutes.value()
@@ -89,19 +89,19 @@ def C_start():
     # in 0 hours, minutes, and seconds
     if hours == 0 and minutes == 0 and seconds == 0:
         # Update buttons: start, pause, stop
-        C_update_buttons(True, False, False)
+        c_update_buttons(True, False, False)
         return None
     # (3) Fetch the seconds
-    Pomodoro_convert_to_seconds(hours, minutes, seconds)
+    pomodoro_convert_to_seconds(hours, minutes, seconds)
     # (4) Start the countdown by using QTimer
-    Pomodoro_count_down()
+    pomodoro_count_down()
     myapp.timer(True)
 
 # Countdown Pause button
-def C_pause():
+def c_pause():
     global PAUSED
     # Update buttons: start, pause, stop
-    C_update_buttons(False, True, True)
+    c_update_buttons(False, True, True)
     # Unpause
     if PAUSED == True:
         print("Unpause")
@@ -116,9 +116,9 @@ def C_pause():
         PAUSED = True
 
 # Countdown Stop button
-def C_stop():
+def c_stop():
     # Update buttons: start, pause, stop
-    C_update_buttons(True, False, False)
+    c_update_buttons(True, False, False)
     # Stop QTimer
     myapp.timer(False)
     # Remove the previous value from SECONDS
@@ -132,7 +132,7 @@ def C_stop():
         PAUSED = False
 
 # Countdown button state toggle
-def C_update_buttons(start, pause, stop):
+def c_update_buttons(start, pause, stop):
     # Start button
     if start == True:
         myapp.ui.pushButton_1.setEnabled(True)
@@ -148,14 +148,14 @@ def C_update_buttons(start, pause, stop):
         myapp.ui.pushButton_3.setEnabled(True)
     else:
         myapp.ui.pushButton_3.setEnabled(False)
-########################
-# END of Pomodoro code #
-########################
 
 
 
 
-# UI class to call the auto generated qt-designer file
+
+#############
+# GUI Code  #
+#############
 class StartQT4(QtGui.QWidget):
     # Constructor
     def __init__(self):
@@ -165,21 +165,20 @@ class StartQT4(QtGui.QWidget):
         # We want to be able to display 8 digits in the clock
         self.ui.lcdNumber.setDigitCount(8)
         # Connect signals to our slots
-        QtCore.QObject.connect(self.ui.pushButton_1, QtCore.SIGNAL("clicked()"), C_start)
-        QtCore.QObject.connect(self.ui.pushButton_2, QtCore.SIGNAL("clicked()"), C_pause)
-        QtCore.QObject.connect(self.ui.pushButton_3, QtCore.SIGNAL("clicked()"), C_stop)
+        QtCore.QObject.connect(self.ui.pushButton_1, QtCore.SIGNAL("clicked()"), c_start)
+        QtCore.QObject.connect(self.ui.pushButton_2, QtCore.SIGNAL("clicked()"), c_pause)
+        QtCore.QObject.connect(self.ui.pushButton_3, QtCore.SIGNAL("clicked()"), c_stop)
 
+    # QTimer
     def timer(self, state):
         global TIMER
-        # Create the timer
         if state:
             # Create a timer
             TIMER = QtCore.QTimer(self)
             # Connect the timer to the appropriate slot
-            TIMER.timeout.connect(Pomodoro_count_down)
+            TIMER.timeout.connect(pomodoro_count_down)
             # Wait one second between slot calls
             TIMER.start(1000)
-        # Destroy the timer
         if not state:
             print("QTimer is stopping")
             TIMER.stop()
