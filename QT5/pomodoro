@@ -244,7 +244,7 @@ class StartQT5(QWidget):
 # Main #
 ########
 if __name__ == "__main__":
-    # Create a PyQT4 application object
+    # Create a PyQT5 application object
     app = QApplication(sys.argv)
     # Start the GUI
     myapp = StartQT5()
