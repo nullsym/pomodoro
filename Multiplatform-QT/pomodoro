@@ -13,7 +13,8 @@
 # https://srinikom.github.io/pyside-docs/PySide/QtCore/QTimer.html
 
 import time, sys
-from PyQt4 import QtCore, QtGui
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 from pomodoro_ui import Ui_main_window
 
 ###############
@@ -198,22 +199,22 @@ def pomodoro_update_buttons(start, pause, stop):
 #############
 # GUI Code  #
 #############
-class StartQT4(QtGui.QWidget):
+class StartQT5(QWidget):
     def __init__(self):
-        QtGui.QWidget.__init__(self)
+        QWidget.__init__(self)
         self.ui = Ui_main_window()
         self.ui.setupUi(self)
         # Connect signals to our slots
-        QtCore.QObject.connect(self.ui.pushButton_start, QtCore.SIGNAL("clicked()"), pomodoro_start)
-        QtCore.QObject.connect(self.ui.pushButton_pause, QtCore.SIGNAL("clicked()"), pomodoro_pause)
-        QtCore.QObject.connect(self.ui.pushButton_stop, QtCore.SIGNAL("clicked()"), pomodoro_stop)
+        self.ui.pushButton_start.clicked.connect(pomodoro_start)
+        self.ui.pushButton_pause.clicked.connect(pomodoro_pause)
+        self.ui.pushButton_stop.clicked.connect(pomodoro_stop)
 
     # QTimer
     def timer(self, state):
         global TIMER
         if state:
             # Create a timer
-            TIMER = QtCore.QTimer(self)
+            TIMER = QTimer(self)
             # Connect the timer to the appropriate slot
             TIMER.timeout.connect(pomodoro_count_down)
             # Wait one second between slot calls
@@ -225,9 +226,9 @@ class StartQT4(QtGui.QWidget):
 ########
 if __name__ == "__main__":
     # Create a PyQT4 application object
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     # Start the GUI
-    myapp = StartQT4()
+    myapp = StartQT5()
     # Show the widget on the screen
     myapp.show()
     # Ensure a clean exit
