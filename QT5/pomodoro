@@ -32,7 +32,6 @@ SECONDS_IN_MINUTE = 60
 #############
 # Functions #
 #############
-# Start button
 # Mode 0 = We are running after the "Start" button was clicked
 # Mode 1 = We are running after being called from pom.count_down()
 def pomodoro_start(mode = 0):
@@ -42,7 +41,6 @@ def pomodoro_start(mode = 0):
         pom.iter_i = 0
         pom.iter_ceiling = 0
         pom.timer = None
-        # Update buttons: start, pause, stop
         myapp.update_buttons(False, True, True)
         # How many loops the user wants
         pom.iter_ceiling = myapp.ui.spinBox_repetitions.value() + 1
@@ -94,9 +92,7 @@ def pomodoro_start(mode = 0):
             pom.count_down()
             myapp.timer(True)
 
-# Pause button
 def pomodoro_pause():
-    # Update buttons: start, pause, stop
     myapp.update_buttons(False, True, True)
     # Unpause
     if pom.paused == True:
@@ -109,9 +105,7 @@ def pomodoro_pause():
         myapp.timer(False)
         pom.paused = True
 
-# Stop button
 def pomodoro_stop():
-    # Update buttons: start, pause, stop
     myapp.update_buttons(True, False, False)
     # Stop QTimer
     myapp.timer(False)
@@ -178,7 +172,6 @@ class Pomodoro():
             if self.iter_i < self.iter_ceiling:
                 pomodoro_start(1)
             else:
-                # Update buttons: start, pause, stop
                 myapp.update_buttons(True, False, False)
 
 #############
