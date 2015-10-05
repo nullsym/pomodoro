@@ -1,0 +1,234 @@
+#!/usr/bin/env python
+
+# DESIGN
+# ------
+# TODO: Explain the logic behind pomodoro_start()
+
+
+# NOTES
+# -----
+# https://wiki.python.org/moin/PyQt/Tutorials
+# http://stackoverflow.com/questions/27212026/how-to-separate-the-ui-and-implementation-in-pyqt
+# http://thecodeinn.blogspot.com/2013/07/tutorial-pyqt-digital-clock.html
+# https://srinikom.github.io/pyside-docs/PySide/QtCore/QTimer.html
+
+import time, sys
+from PyQt4 import QtCore, QtGui
+from pomodoro_ui import Ui_main_window
+
+###############
+# Global vars #
+###############
+SECONDS_IN_HOUR = 3600
+SECONDS_IN_MINUTE = 60
+# For keeping track of remaining seconds in our countdown
+SECONDS = 0
+# Holds the countdown printed the QLabel label_clock
+STRING = 0
+# Holds the QTime timer
+TIMER = None
+# For performing the iterations on pomodoro_start()
+LOOPS = {'each_iter': 0, 'i': 0, 'ceiling': 0}
+# For when the user clicks on the PAUSE button
+PAUSED = False
+
+#################
+# Pomodoro code #
+#################
+def pomodoro_play_notification():
+    print("Playing audio notification. Not.")
+
+# Perform the countdown
+def pomodoro_count_down():
+    global SECONDS
+    global STRING
+    # Get a new format string
+    STRING = pomodoro_convert_from_seconds()
+    # Print the results
+    # print("Format string: " + STRING)
+    myapp.ui.label_clock.setText(STRING)
+    # Update the seconds
+    SECONDS = SECONDS - 1
+    if SECONDS < 0:
+        # Stop QTimer
+        myapp.timer(False)
+        # Play a notification
+        pomodoro_play_notification()
+        # We want to call pomodoro_start() ONLY if we are NOT done
+        # with the iterations provided by spinBox_repetitions
+        if LOOPS['i'] < LOOPS['ceiling']:
+            pomodoro_start(1)
+        else:
+            # Update buttons: start, pause, stop
+            pomodoro_update_buttons(True, False, False)
+
+# Convert from seconds to hours:minutes:seconds
+def pomodoro_convert_from_seconds():
+    # On the first divmod the quotient will be the minutes and the remainder will be the seconds
+    # On the second divmod the quotient will be the hours and the remainder will be the minutes
+    m, s = divmod(SECONDS, 60)
+    h, m = divmod(m, 60)
+    time_format = '{:02d}:{:02d}:{:02d}'.format(h, m, s)
+    return time_format
+
+# Convert from hours:minutes:seconds to seconds
+def pomodoro_convert_to_seconds(hours, minutes, seconds):
+    global SECONDS
+    SECONDS = 0;
+    if hours != 0:
+        SECONDS += (hours * SECONDS_IN_HOUR)
+    if minutes != 0:
+        SECONDS += (minutes * SECONDS_IN_MINUTE)
+    if seconds != 0:
+        SECONDS += seconds
+
+
+# Start button
+# Mode 0 = We are running after the "Start" button was clicked
+# Mode 1 = We are running after being called from pomodoro_count_down()
+def pomodoro_start(mode = 0):
+    if (mode == 0):
+        global SECONDS, LOOPS, TIMER
+        # Reset the values of the global vars
+        LOOPS['each_iter'] = 0
+        LOOPS['i'] = 0
+        LOOPS['ceiling'] = 0
+        TIMER = None
+        # Update buttons: start, pause, stop
+        pomodoro_update_buttons(False, True, True)
+        # How many loops the user wants
+        LOOPS['ceiling'] = myapp.ui.spinBox_repetitions.value() + 1
+        # First iteration should start with the work timer
+        mode = 2
+    elif (mode == 1):
+        # Work timer is divisible by 2
+        if LOOPS['each_iter'] % 2 == 0:
+            mode = 2
+        # Break timer is not divisible by 2
+        else:
+            mode = 3
+
+    ##############
+    # Work timer #
+    ##############
+    if (mode == 2):
+        LOOPS['each_iter'] += 1
+        hours = myapp.ui.spinBox_work_hours.value()
+        minutes = myapp.ui.spinBox_work_minutes.value()
+        seconds = myapp.ui.spinBox_work_seconds.value()
+
+        # Do nothing when we don't have input
+        if hours == 0 and minutes == 0 and seconds == 0:
+            pomodoro_update_buttons(True, False, False)
+        else:
+            # Convert hours:minutes:seconds to seconds
+            pomodoro_convert_to_seconds(hours, minutes, seconds)
+            # Start the countdown by using QTimer
+            pomodoro_count_down()
+            myapp.timer(True)
+    ###############
+    # Break timer #
+    ###############
+    elif (mode == 3):
+        LOOPS['each_iter'] += 1
+        LOOPS['i'] += 1
+        hours = myapp.ui.spinBox_break_hours.value()
+        minutes = myapp.ui.spinBox_break_minutes.value()
+        seconds = myapp.ui.spinBox_break_seconds.value()
+
+        # Do nothing when we don't have input
+        if hours == 0 and minutes == 0 and seconds == 0:
+            pomodoro_update_buttons(True, False, False)
+        else:
+            # Convert hours:minutes:seconds to seconds
+            pomodoro_convert_to_seconds(hours, minutes, seconds)
+            # Start the countdown by using QTimer
+            pomodoro_count_down()
+            myapp.timer(True)
+
+# Pause button
+def pomodoro_pause():
+    global PAUSED
+    # Update buttons: start, pause, stop
+    pomodoro_update_buttons(False, True, True)
+    # Unpause
+    if PAUSED == True:
+        print("Unpause")
+        # Start QTimer
+        myapp.timer(True)
+        PAUSED = False
+    # Pause
+    elif PAUSED == False:
+        print("Pause")
+        # Stop QTimer
+        myapp.timer(False)
+        PAUSED = True
+
+# Stop button
+def pomodoro_stop():
+    # Update buttons: start, pause, stop
+    pomodoro_update_buttons(True, False, False)
+    # Stop QTimer
+    myapp.timer(False)
+    # Remove the previous value from SECONDS
+    global SECONDS
+    SECONDS = 0
+    myapp.ui.label_clock.setText("00:00:00")
+    # If we try to stop the timer while we are on the paused state
+    # then update this state to unpaused
+    global PAUSED
+    if PAUSED == True:
+        PAUSED = False
+
+# Countdown button state toggle
+def pomodoro_update_buttons(start, pause, stop):
+    if start:
+        myapp.ui.pushButton_start.setEnabled(True)
+    else:
+        myapp.ui.pushButton_start.setEnabled(False)
+    if pause:
+        myapp.ui.pushButton_pause.setEnabled(True)
+    else:
+        myapp.ui.pushButton_pause.setEnabled(False)
+    if stop:
+        myapp.ui.pushButton_stop.setEnabled(True)
+    else:
+        myapp.ui.pushButton_stop.setEnabled(False)
+
+#############
+# GUI Code  #
+#############
+class StartQT4(QtGui.QWidget):
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+        self.ui = Ui_main_window()
+        self.ui.setupUi(self)
+        # Connect signals to our slots
+        QtCore.QObject.connect(self.ui.pushButton_start, QtCore.SIGNAL("clicked()"), pomodoro_start)
+        QtCore.QObject.connect(self.ui.pushButton_pause, QtCore.SIGNAL("clicked()"), pomodoro_pause)
+        QtCore.QObject.connect(self.ui.pushButton_stop, QtCore.SIGNAL("clicked()"), pomodoro_stop)
+
+    # QTimer
+    def timer(self, state):
+        global TIMER
+        if state:
+            # Create a timer
+            TIMER = QtCore.QTimer(self)
+            # Connect the timer to the appropriate slot
+            TIMER.timeout.connect(pomodoro_count_down)
+            # Wait one second between slot calls
+            TIMER.start(1000)
+        if not state:
+            TIMER.stop()
+########
+# Main #
+########
+if __name__ == "__main__":
+    # Create a PyQT4 application object
+    app = QtGui.QApplication(sys.argv)
+    # Start the GUI
+    myapp = StartQT4()
+    # Show the widget on the screen
+    myapp.show()
+    # Ensure a clean exit
+    sys.exit(app.exec_())
