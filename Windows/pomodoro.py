@@ -22,9 +22,9 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 # and it has a Attribution 3.0 license
 # AUDIO3 was downloaded from http://soundbible.com/1846-Warbling-Vireo.html
 # and it has a Attribution 3.0 license
-AUDIO1 = SCRIPT_DIR + "\\1.wav"
-AUDIO2 = SCRIPT_DIR + "\\2.wav"
-AUDIO3 = SCRIPT_DIR + "\\3.wav"
+AUDIO1 = SCRIPT_DIR + "\\..\\1.wav"
+AUDIO2 = SCRIPT_DIR + "\\..\\2.wav"
+AUDIO3 = SCRIPT_DIR + "\\..\\3.wav"
 
 #############
 # Functions #
