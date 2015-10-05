@@ -12,7 +12,7 @@ This application implements the famous time management method known as the [Pomo
 * A Java version written for Android **[Work in Progress]**
 
 
-## License of the multimedia files found on the media folder
+## Multimedia files credit
 
 * The files starting with the number 1 were downloaded from [here][2] and they have a Public Domain license
 * The files starting with the number 2 were downloaded from [here][3] and they have an Attribution 3.0 license
