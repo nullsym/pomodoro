@@ -11,17 +11,23 @@
 # http://stackoverflow.com/questions/27212026/how-to-separate-the-ui-and-implementation-in-pyqt
 # http://thecodeinn.blogspot.com/2013/07/tutorial-pyqt-digital-clock.html
 # https://srinikom.github.io/pyside-docs/PySide/QtCore/QTimer.html
+# http://pyqt.sourceforge.net/Docs/PyQt5/class_reference.html
 
-import time, sys
+import time, sys, os
+from pomodoro_ui import Ui_main_window
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from pomodoro_ui import Ui_main_window
+import PyQt5.QtMultimedia as Media
 
 ###############
 # Global vars #
 ###############
 SECONDS_IN_HOUR = 3600
 SECONDS_IN_MINUTE = 60
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+AUDIO1 = SCRIPT_DIR + "/../media/1.wav"
+AUDIO2 = SCRIPT_DIR + "/../media/2.wav"
+AUDIO3 = SCRIPT_DIR + "/../media/3.wav"
 # For keeping track of remaining seconds in our countdown
 SECONDS = 0
 # Holds the countdown printed the QLabel label_clock
@@ -37,7 +43,12 @@ PAUSED = False
 # Pomodoro code #
 #################
 def pomodoro_play_notification():
-    print("Playing audio notification. Not.")
+    # We have to subtract 1 because on pomodo_start we increment
+    # it by 1 before calling this function
+    if (LOOPS['each_iter'] - 1) % 2 == 0:
+        myapp.player1.play()
+    else:
+        myapp.player2.play()
 
 # Perform the countdown
 def pomodoro_count_down():
@@ -208,6 +219,16 @@ class StartQT5(QWidget):
         self.ui.pushButton_start.clicked.connect(pomodoro_start)
         self.ui.pushButton_pause.clicked.connect(pomodoro_pause)
         self.ui.pushButton_stop.clicked.connect(pomodoro_stop)
+        # Create audio file 1
+        self.content1 = Media.QMediaContent(QUrl.fromLocalFile(AUDIO1))
+        self.player1 = Media.QMediaPlayer()
+        self.player1.setMedia(self.content1)
+        self.player1.setVolume(20)
+        # Create audio file 2
+        self.content2 = Media.QMediaContent(QUrl.fromLocalFile(AUDIO2))
+        self.player2 = Media.QMediaPlayer()
+        self.player2.setMedia(self.content2)
+        self.player2.setVolume(20)
 
     # QTimer
     def timer(self, state):
