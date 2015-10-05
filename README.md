@@ -7,6 +7,8 @@ This application implements the famous time management method known as the [Pomo
 * Command Line Interface on Linux and OSX
 * Command Line Interface on Windows
 * A GUI written in QT5
+
+<img src="https://cloud.githubusercontent.com/assets/1633888/10280178/458dc838-6b39-11e5-8ba4-0b38aae5138d.png" alt="Pomodoro QT Screenshot">
 * A GUI written in GTK **[Work in Progress]**
 * A GUI written in ncurses **[Work in Progress]**
 * A Java version written for Android **[Work in Progress]**
