@@ -16,9 +16,9 @@ This application implements the famous time management method known as the [Pomo
 
 ## Multimedia files credit
 
-* The files starting with the number 1 were downloaded from [here][2] and they have a Public Domain license
-* The files starting with the number 2 were downloaded from [here][3] and they have an Attribution 3.0 license
-* The files starting with the number 3 were downloaded from [here][4] and they have an Attribution 3.0 license
+* The file 1.wav was downloaded from [here][2] under the Public Domain license
+* The file 2.wav was downloaded from [here][3] under the Attribution 3.0 license
+* The file 3.wav was downloaded from [here][4] under the Attribution 3.0 license
 
 [1]: https://en.wikipedia.org/wiki/Pomodoro_Technique
 [2]: http://soundbible.com/1795-Electrical-Sweep.html
