@@ -99,11 +99,13 @@ def pomodoro_pause():
         # Start QTimer
         myapp.timer(True)
         pom.paused = False
+        myapp.ui.pushButton_pause.setText("Pause")
     # Pause
     elif pom.paused == False:
         # Stop QTimer
         myapp.timer(False)
         pom.paused = True
+        myapp.ui.pushButton_pause.setText("Unpause")
 
 def pomodoro_stop():
     myapp.update_buttons(True, False, False)
