@@ -4,12 +4,16 @@ This application implements the famous time management method known as the [Pomo
 
 ## Versions Available
 
-* Command Line Interface (CLI) on Linux and OSX
-* Command Line Interface (CLI) on Windows
+* Command Line Interface (CLI) for Linux and OSX
+* Command Line Interface (CLI) for Windows
 * A GUI written in QT5
 
 <img src="https://cloud.githubusercontent.com/assets/1633888/10417811/aac5494c-7016-11e5-9458-246547a5c4cb.png" alt="Pomodoro QT Screenshot">
 
+## Dependencies
+
+* The Linux version depends on mpv
+* The QT5 version depends on qt5 and qt5-multimedia
 
 ## Credits for the Multimedia Files
 
