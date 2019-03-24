@@ -90,14 +90,17 @@ def play_audio(option):
 
 def count_down(seconds):
     while seconds:
-        # On the first divmod the quotient will be the minutes and the remainder will be the seconds
-        # On the second divmod the quotient will be the hours and the remainder will be the minutes
-        m, s = divmod(seconds, 60)
-        h, m = divmod(m, 60)
-        time_format = '{:02d}:{:02d}:{:02d}'.format(h, m, s)
-        print(time_format, end='\r', flush=True)
-        time.sleep(1)
-        seconds = seconds - 1
+        try:
+            # On the first divmod the quotient will be the minutes and the remainder will be the seconds
+            # On the second divmod the quotient will be the hours and the remainder will be the minutes
+            m, s = divmod(seconds, 60)
+            h, m = divmod(m, 60)
+            time_format = '{:02d}:{:02d}:{:02d}'.format(h, m, s)
+            print(time_format, end='\r', flush=True)
+            time.sleep(1)
+            seconds = seconds - 1
+        except KeyboardInterrupt:
+            sys.exit("Bye...")
 
 def convert_to_seconds(given_time):
     seconds = 0
