@@ -17,7 +17,7 @@ import time, sys, os
 from pomodoro_ui import Ui_main_window
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-import PyQt5.QtMultimedia as Media
+from PyQt5.QtMultimedia import QSound
 
 ###############
 # Global vars #
@@ -25,7 +25,6 @@ import PyQt5.QtMultimedia as Media
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 AUDIO1 = SCRIPT_DIR + "/../media/1.wav"
 AUDIO2 = SCRIPT_DIR + "/../media/2.wav"
-AUDIO3 = SCRIPT_DIR + "/../media/3.wav"
 SECONDS_IN_HOUR = 3600
 SECONDS_IN_MINUTE = 60
 
@@ -189,15 +188,9 @@ class StartQT5(QWidget):
         self.ui.pushButton_pause.clicked.connect(pomodoro_pause)
         self.ui.pushButton_stop.clicked.connect(pomodoro_stop)
         # Create audio media 1
-        self.content1 = Media.QMediaContent(QUrl.fromLocalFile(AUDIO1))
-        self.player1 = Media.QMediaPlayer()
-        self.player1.setMedia(self.content1)
-        self.player1.setVolume(10)
+        self.sound1 = QSound(AUDIO1)
         # Create audio media 2
-        self.content2 = Media.QMediaContent(QUrl.fromLocalFile(AUDIO2))
-        self.player2 = Media.QMediaPlayer()
-        self.player2.setMedia(self.content2)
-        self.player2.setVolume(10)
+        self.sound2 = QSound(AUDIO2)
 
     # Button state toggle: start, pause, stop
     def update_buttons(self, start, pause, stop):
@@ -219,9 +212,9 @@ class StartQT5(QWidget):
         # We have to subtract 1 because in pomodo_start() we increment
         # it by 1 before calling this function
         if (pom.iter_j - 1) % 2 == 0:
-            self.player1.play()
+            self.sound1.play()
         else:
-            self.player2.play()
+            self.sound2.play()
 
     # QTimer
     def timer(self, state):
